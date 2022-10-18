@@ -1,0 +1,163 @@
+---
+title: "Wrangling"
+author: "Guillermo Durán González"
+format: pptx
+editor: visual
+---
+
+# Cargas
+
+## Carga de paquete 
+if (!require("tidyverse")){install.packages("tidyverse"); library(tidverse)}
+
+## Carga de set datos
+gapminder_df <- read.table(file = "https://raw.githubusercontent.com/martintinch0/CienciaDeDatosParaCuriosos/master/data/gapminder.csv",
+                           sep=';',
+                           header = TRUE,
+                           stringsAsFactors = FALSE)
+class(gapminder_df)
+
+## Nombres de columnas
+colnames(gapminder_df)
+
+
+# Piping
+
+df_pais<-gapminder_df %>% select(country) %>%  filter (country=="Chile")
+
+## Notese que se devuelve un DF
+class(df_pais)
+
+## Notese que tambien se puede hacer como vector
+vector_pais<-(gapminder_df$country) # con $ se crea un vector
+class(vector_pais)
+vector_pais[vector_pais=="Chile"]
+
+# Otras formas de generar vectores
+
+vector_pais1 <- gapminder_df %>% select(country) %>% unlist()
+vector_pais2 <- gapminder_df %>% pull(country)
+
+## Un vector con dos columnas 
+vector_pais<-cbind(gapminder_df$country,gapminder_df$gdpPercap)
+
+# Ahora con Dataframe
+
+## Un Data Frame con dos columnas
+vector_pais<-cbind(gapminder_df$country,gapminder_df$gdpPercap)
+
+## Largo
+
+df_pais<-gapminder_df %>% select(country)
+length(df_pais) # número de columnas
+count(df_pais) # número de filas
+vector_pais<-(gapminder_df$country)
+length(vector_pais) # número de elementos
+
+
+# Quitar repetidos
+
+vector_paises3 <- unique(gapminder_df$country) # con vectores
+length(vector_paises3)
+Num_pais<-gapminder_df %>% select(country) %>% unique.data.frame() %>% count() # con dataframe
+
+# Seleccionando filas
+
+gapminder_df %>%  filter(year == 2002) # Año 2002
+gapminder_df %>% filter(country == "Chile", year == 1962)
+gapminder_df %>% filter(country == "Chile", year != 1967)
+gapminder_df %>% filter(country == "Chile", year == 1962 | year == 1967)
+gapminder_df %>% filter(country == "Chile",year %in% c(1962,1967))
+
+# Ordenandolo todo
+
+gapminder_df %>% select(country, continent, pop) %>% filter(continent=="Americas") %>% arrange(desc(pop))
+gapminder_df %>% select(country, continent, pop) %>% filter(continent=="Americas") %>% arrange(pop)
+
+# Insertar nuevas columnas
+new_gapminder <- gapminder_df %>% mutate(pop = pop / 1000000)
+head(new_gapminder, n = 3)
+df<-gapminder_df %>% mutate(gdp = gdpPercap * pop)
+head(df, n = 3)
+
+# Agrupando datos
+
+gapminder_df %>% group_by(year, continent) %>%  summarise(mean_lifeExp = mean(lifeExp))
+gapminder_df %>% group_by(year, continent) %>%
+  summarise(poor_country = min(gdpPercap),
+            rich_country = max(gdpPercap),
+            poor_country_nom = country[gdpPercap == poor_country],
+            rich_country_nom = country[gdpPercap == rich_country])
+gapminder_df %>% group_by(year, continent) %>%
+  mutate(dif_lifeExp = lifeExp - mean(lifeExp))
+
+# Pivotenado con tibble
+gapminder_continente <- gapminder_df %>% 
+  select(country, continent,year,pop) %>% filter(continent=="Asia") %>%
+  mutate(pop = round(pop / 1000000,1)) %>%
+  arrange(country,year) 
+
+wider<-gapminder_continente %>%
+  pivot_wider(names_from = year,values_from = pop) 
+
+# Reconstruyendo lo pivoteado
+
+longer1 <- wider %>%
+  pivot_longer(cols = 3:14,
+               names_to = 'year',
+               values_to = 'pop') %>%
+  arrange(country,year)
+longer2 <- wider %>%
+  pivot_longer(cols = -c(country,continent),
+               names_to = 'year',
+               values_to = 'pop') %>%
+arrange(country,year)
+
+identical(gapminder_continente, longer1) #comprobando si son iguales
+
+class(longer2$year) # verificando el tipo de datos
+
+class(gapminder_continente$year) # verificando el tipo de datos
+
+## Ajustando el tipo de datos
+
+longer1<- longer1 %>% mutate(year=as.integer(year)) 
+
+## Ahora si convertir el dataframe en tibble.
+
+gapminder_continente<-gapminder_continente %>% as_tibble(gapminder_continente)
+identical(gapminder_continente, longer1)
+
+
+# Pruebe el siguiente código
+
+
+mortalidadInfantil <- read.table(file="https://raw.githubusercontent.com/martintinch0/CienciaDeDatosParaCuriosos/master/data/MortalidadInfantilLong.csv",
+                                 sep = ",",
+                                 header = TRUE,
+                                 stringsAsFactors = FALSE)
+                                 
+gapminder_chile <- gapminder_df %>% 
+  filter(country == "Chile")
+  
+gapminder_chile1952 <- gapminder_chile %>%
+  filter(year==1952)
+  
+mortalidadInfantilchile1952 <- mortalidadInfantil %>%
+  filter(Year==1952 & country=="Chile")
+  
+gapminder_chile1952 <- left_join(gapminder_chile1952,
+                                     mortalidadInfantilchile1952,
+                                     by="country")
+                                     
+gapminder_chile1952 
+
+gapminder_chile1952 <- right_join(gapminder_chile1952,
+                                 mortalidadInfantilchile1952,
+                                 by="country")
+gapminder_chile1952 
+
+gapminder_chile1952 <- inner_join(gapminder_chile1952,
+                                 mortalidadInfantilchile1952,
+                                 by="country")
+gapminder_chile1952 

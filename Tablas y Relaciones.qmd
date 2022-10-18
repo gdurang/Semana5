@@ -1,0 +1,119 @@
+---
+title: "Modelado de Tablas"
+author: "Guillermo Durán González"
+format: pptx
+editor: visual
+---
+
+# Represenatción de Tablas y sus Relaciones
+
+![](Tablas.jpeg){fig-align="center"}
+
+## Los paquetes a aplicar sono los siguientes
+
+## Paquete para carga de archivos .csv en texto plano
+
+if (!require("readr")){install.packages("readr"); library(readr)}
+
+## Paquete para modelar tablas y sus relaciones
+
+if (!require("datamodelr")){install.packages("datamodelr"); library(datamodelr)}
+
+## Paquete para representar graficamente las tablas y sus relaciones
+
+if (!require("DiagrammeR")){install.packages("DiagrammeR", dependencies = TRUE); library(DiagrammeR)}
+
+## Paquete para manejo de datos
+
+if (!require("tidyverse")){install.packages("tidyverse"); library(tidverse)}
+
+# Carga de conjunto de datos
+
+# Carga de Tablas:
+
+## Tabla de Proveedores
+
+p \<- read.table(file = "https://raw.githubusercontent.com/ssantanar/datasets/master/retail/products.csv", sep=',', header = TRUE, stringsAsFactors = FALSE)
+
+## Tabla de Ordenes 
+
+o \<- read.table(file = "https://raw.githubusercontent.com/ssantanar/datasets/master/retail/orders.csv", sep=',', header = TRUE, stringsAsFactors = FALSE)
+
+## Tabla de Ítems
+
+i \<- read.table(file = "https://raw.githubusercontent.com/ssantanar/datasets/master/retail/order_items.csv", sep=',', header = TRUE, stringsAsFactors = FALSE)
+
+## Tabla de Clientes
+
+c \<- read.table(file = "https://raw.githubusercontent.com/ssantanar/datasets/master/retail/customers.csv", sep=',', header = TRUE, stringsAsFactors = FALSE)
+
+## Tabla de Cátegorias
+
+k \<- read.table(file = "https://raw.githubusercontent.com/ssantanar/datasets/master/retail/categories.csv", sep=',', header = TRUE, stringsAsFactors = FALSE)
+
+## Tabla de Departamentos
+
+d \<- (read_csv("https://raw.githubusercontent.com/ssantanar/datasets/master/retail/departments.csv")) d\<-as.data.frame.table(d)
+
+# Modelo Descriptivo de Tablas
+
+## Creación del Modelo
+
+dm_f \<- dm_from_data_frames(p, o, i, c, k, d)
+
+## Carga de la gráfica
+
+graph \<- dm_create_graph(dm_f, rankdir = "LR", col_attr = c("column", "type")) dm_render_graph(graph)
+
+## Declaración gráfica de llaves
+
+dm_f \<- dm_add_references( dm_f, c$customer_id == o$order_customer_id, o$order_id == i$order_item_order_id, i$order_item_product_id == p$product_id, p$product_category_id == k$category_id, k$category_departament_id == d$Freq.department_id )
+
+# Nueva gráfica
+
+graph \<- dm_create_graph(dm_f, rankdir = "BT", col_attr = c("column","type")) dm_render_graph(graph)
+
+
+# Relacionando Tablas
+
+## Left join
+lj_pi <- p %>% left_join(i,by =c('product_id'='order_item_product_id'))
+colnames(lj_pi)
+head(lj_pi)
+View(lj_pi)
+length(lj_pi)
+nrow(lj_pi)
+
+## Right join
+rj_pi <- p %>% right_join(i,by =c('product_id'='order_item_product_id'))
+colnames(rj_pi)
+head(rj_pi)
+View(rj_pi)
+length(rj_pi)
+nrow(rj_pi)
+
+## Inner join
+ij_pi <- p %>% inner_join(i,by =c('product_id'='order_item_product_id'))
+colnames(ij_pi)
+head(ij_pi)
+View(ij_pi)
+length(ij_pi)
+nrow(ij_pi)
+
+## Probar los siguientes códigos
+ij_dk <-k %>% inner_join(d, by=c('category_departament_id'='Freq.department_id')) 
+View(ij_dk)
+length(ij_dk)
+nrow(ij_dk)
+
+lj_dk <-k %>% left_join(d, by=c('category_departament_id'='Freq.department_id')) 
+View(lj_dk)
+length(lj_dk)
+nrow(lj_dk)
+
+rj_dk <-k %>% right_join(d, by=c('category_departament_id'='Freq.department_id')) 
+View(rj_dk)
+length(rj_dk)
+nrow(rj_dk)
+
+# ¿Qué se puede concluir?
