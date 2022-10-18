@@ -3,9 +3,10 @@ if (!require("readr")){install.packages("readr"); library(readr)}
 if (!require("datamodelr")){install.packages("datamodelr"); library(datamodelr)}
 if (!require("DiagrammeR")){install.packages("DiagrammeR", dependencies = TRUE); library(DiagrammeR)}
 
+
 # Carga de conjunto de datos
 
-# Tabla de Probeedores
+# Tabla de Productos
 p <- read.table(file = "https://raw.githubusercontent.com/ssantanar/datasets/master/retail/products.csv",
                            sep=',',
                            header = TRUE,
@@ -32,6 +33,11 @@ k <- read.table(file = "https://raw.githubusercontent.com/ssantanar/datasets/mas
                        header = TRUE,
                        stringsAsFactors = FALSE)
 #Tabla de Departamentos
+#dd<-read.table(file = "https://raw.githubusercontent.com/ssantanar/datasets/master/retail/departments.csv",
+#           sep=',',
+#           header = TRUE,
+#           stringsAsFactors = FALSE)
+
 d <- (read_csv("https://raw.githubusercontent.com/ssantanar/datasets/master/retail/departments.csv"))
 d<-as.data.frame.table(d)
 
@@ -49,3 +55,39 @@ dm_f <- dm_add_references(
 )
 graph <- dm_create_graph(dm_f, rankdir = "BT", col_attr = c("column", "type"))
 dm_render_graph(graph)
+
+#left join
+
+lj_pi <- p %>% left_join(i,by =c("product_id"="order_item_product_id")) 
+ncol(lj_pi)
+nrow(lj_pi)
+dim(lj_pi)
+length(lj_pi)
+count(lj_pi)
+colnames(lj_pi) 
+head(lj_pi) 
+View(lj_pi) 
+
+#right join
+ 
+rj_pi <- p %>% right_join(i,by =c("product_id"="order_item_product_id")) 
+ncol(rj_pi)
+nrow(rj_pi)
+dim(rj_pi)
+length(rj_pi)
+count(rj_pi)
+colnames(rj_pi) 
+head(rj_pi) 
+View(rj_pi) 
+
+#inner join
+
+ij_pi <- p %>% inner_join(i,by =c("product_id"="order_item_product_id")) 
+ncol(ij_pi)
+nrow(ij_pi)
+dim(ij_pi)
+length(ij_pi)
+count(ij_pi)
+colnames(ij_pi) 
+head(ij_pi) 
+View(ij_pi) 
