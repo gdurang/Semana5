@@ -35,7 +35,7 @@ if (!require("tidyverse")){install.packages("tidyverse"); library(tidverse)}
 
 p \<- read.table(file = "https://raw.githubusercontent.com/ssantanar/datasets/master/retail/products.csv", sep=',', header = TRUE, stringsAsFactors = FALSE)
 
-## Tabla de Ordenes 
+## Tabla de Ordenes
 
 o \<- read.table(file = "https://raw.githubusercontent.com/ssantanar/datasets/master/retail/orders.csv", sep=',', header = TRUE, stringsAsFactors = FALSE)
 
@@ -73,47 +73,26 @@ dm_f \<- dm_add_references( dm_f, c$customer_id == o$order_customer_id, o$order_
 
 graph \<- dm_create_graph(dm_f, rankdir = "BT", col_attr = c("column","type")) dm_render_graph(graph)
 
-
 # Relacionando Tablas
 
 ## Left join
-lj_pi <- p %>% left_join(i,by =c('product_id'='order_item_product_id'))
-colnames(lj_pi)
-head(lj_pi)
-View(lj_pi)
-length(lj_pi)
-nrow(lj_pi)
+
+lj_pi \<- p %\>% left_join(i,by =c('product_id'='order_item_product_id')) colnames(lj_pi) head(lj_pi) View(lj_pi) length(lj_pi) nrow(lj_pi)
 
 ## Right join
-rj_pi <- p %>% right_join(i,by =c('product_id'='order_item_product_id'))
-colnames(rj_pi)
-head(rj_pi)
-View(rj_pi)
-length(rj_pi)
-nrow(rj_pi)
+
+rj_pi \<- p %\>% right_join(i,by =c('product_id'='order_item_product_id')) colnames(rj_pi) head(rj_pi) View(rj_pi) length(rj_pi) nrow(rj_pi)
 
 ## Inner join
-ij_pi <- p %>% inner_join(i,by =c('product_id'='order_item_product_id'))
-colnames(ij_pi)
-head(ij_pi)
-View(ij_pi)
-length(ij_pi)
-nrow(ij_pi)
+
+ij_pi \<- p %\>% inner_join(i,by =c('product_id'='order_item_product_id')) colnames(ij_pi) head(ij_pi) View(ij_pi) length(ij_pi) nrow(ij_pi)
 
 ## Probar los siguientes códigos
-ij_dk <-k %>% inner_join(d, by=c('category_departament_id'='Freq.department_id')) 
-View(ij_dk)
-length(ij_dk)
-nrow(ij_dk)
 
-lj_dk <-k %>% left_join(d, by=c('category_departament_id'='Freq.department_id')) 
-View(lj_dk)
-length(lj_dk)
-nrow(lj_dk)
+ij_dk \<-k %\>% inner_join(d, by=c('category_departament_id'='Freq.department_id')) View(ij_dk) length(ij_dk) nrow(ij_dk)
 
-rj_dk <-k %>% right_join(d, by=c('category_departament_id'='Freq.department_id')) 
-View(rj_dk)
-length(rj_dk)
-nrow(rj_dk)
+lj_dk \<-k %\>% left_join(d, by=c('category_departament_id'='Freq.department_id')) View(lj_dk) length(lj_dk) nrow(lj_dk)
+
+rj_dk \<-k %\>% right_join(d, by=c('category_departament_id'='Freq.department_id')) View(rj_dk) length(rj_dk) nrow(rj_dk)
 
 # ¿Qué se puede concluir?

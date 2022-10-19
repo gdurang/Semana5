@@ -91,3 +91,18 @@ count(ij_pi)
 colnames(ij_pi) 
 head(ij_pi) 
 View(ij_pi) 
+
+# Testeo
+
+ij_dk <-k %>% inner_join(d, by=c('category_departament_id'='Freq.department_id'))
+View(ij_dk) 
+dim(ij_dk)
+
+lj_dk <-k %>% left_join(d, by=c('category_departament_id'='Freq.department_id'))
+View(ij_dk) 
+dim(ij_dk)
+
+rj_dk <-k %>% right_join(d, by=c('category_departament_id'='Freq.department_id'))
+View(rj_dk) 
+dim(rj_dk)
+
